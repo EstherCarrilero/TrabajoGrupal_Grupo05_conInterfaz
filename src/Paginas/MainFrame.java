@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Objects;
+import PaqC05.*;
 
 public class MainFrame extends JFrame{
     private JPanel mainPanel;
@@ -57,11 +58,35 @@ public class MainFrame extends JFrame{
         botones.add(botPrioridad3);
 
         //---BOTON MOSTRAR DATOS---
+        //Ejemplo para probar
+        Hub h1=new Hub();
+        Contenedor c1=new Contenedor(100,1500,"España",true,3,"Nada","Correos Express","Alireparte");
+        Contenedor c2=new Contenedor(101,1501,"España",false,2,"Nada 2","Correos Express","Alireparte");
+        h1.apilar(c1);
+        h1.apilar(c2);
         botMostrarDatos.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Pag2 verPag2 = new Pag2();
-                verPag2.setVisible(true);
+                Contenedor resultado;
+                Contenedor correcto=null;
+                for (int i=0;i<10;i++){
+                    for (int j=0;j<12;j++){
+                        if(h1.getM(i,j)!=null){
+                            resultado=h1.getM(i,j);
+                            if(resultado.getId()==Integer.parseInt(textMostrarDatos.getText())){
+                                correcto=h1.getM(i,j);
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (correcto!=null) {
+                    etiError.setText("");
+                    Pag2 verPag2 = new Pag2(correcto);
+                    verPag2.setVisible(true);
+                }else{
+                    etiError.setText("* Error número de identificador equivocado");
+                }
             }
         });
 
