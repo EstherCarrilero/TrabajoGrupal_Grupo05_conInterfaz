@@ -41,6 +41,7 @@ public class MainFrame extends JFrame{
     private JLabel labNumIDMAL;
     private JLabel labPesoMAL;
     private JLabel etiLogo;
+    private JLabel etiError;
 
     public MainFrame(){
         setContentPane(mainPanel);
