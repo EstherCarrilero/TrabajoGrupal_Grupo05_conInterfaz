@@ -51,6 +51,9 @@ public class MainFrame extends JFrame{
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
 
+        Puerto puerto = new Puerto();
+        textEstado.setText(puerto.getP(0).toString());
+
         //---BOTONES DE PRIORIDAD---
         ButtonGroup botones = new ButtonGroup();
         botones.add(botPrioridad1);
@@ -116,6 +119,27 @@ public class MainFrame extends JFrame{
                 }
             }
         });
+
+        //--BOTON DESAPILAR--
+        //Ejemplo para probar
+        puerto.setP(0, h1);
+        textEstado.setText(puerto.getP(0).toString());
+        botDesapilar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int columna = Integer.parseInt(textDesapilar.getText());
+                int numPuerto = puerto.desapilar(columna);
+
+                if(numPuerto == -1){
+                    etiError.setText("* No se pudo desapilar");
+                }
+                else{
+                    etiError.setText("Se desapiló correctamente");
+                    textEstado.setText(puerto.getP(numPuerto).toString());
+                }
+            }
+        });
+
         //---CONTROLA NUMERO DE IDENTIFICACION---
         textNumIdentificacion.addKeyListener(new KeyAdapter() {
             @Override
