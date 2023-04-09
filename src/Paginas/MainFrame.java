@@ -9,6 +9,7 @@ import java.util.Objects;
 import PaqC05.*;
 
 public class MainFrame extends JFrame{
+    Hub hub1 = new Hub();
     private JPanel mainPanel;
     private JTextField textEmpRemitente;
     private JTextField textEmpReceptora;
@@ -223,6 +224,41 @@ public class MainFrame extends JFrame{
             }
         });
 
+
+        //Con los datos introducidos del contenedor, lo crea y lo apila en la colunma que le toca segun su preferencia
+        //en caso de no poder escribe un error en etiError
+        botApilar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int prio= 0;
+                boolean T;
+                int id = Integer.parseInt(textPeso.getText());
+                int peso = Integer.parseInt(textPeso.getText());
+                if (botPrioridad1.isSelected()){
+                    prio= 1;
+                }
+                if (botPrioridad2.isSelected()){
+                    prio= 2;
+                }
+                if (botPrioridad2.isSelected()){
+                    prio= 3;
+                }
+
+                if (checkBoxAduana.isSelected()){
+                    T = true;
+                }
+                else {
+                    T=false;
+                }
+                Contenedor C = new Contenedor(id,peso, comboBoxPais.getName(), T, prio, textDescContent.getText(), textEmpRemitente.getText(), textEmpReceptora.getText());
+                ;
+               Boolean A =  hub1.apilar(C);
+               if (A == false){
+                   etiError.setText("No se ha podido apilar");
+
+               }
+            }
+        });
     }
 
     public static void main(String[] args) {
