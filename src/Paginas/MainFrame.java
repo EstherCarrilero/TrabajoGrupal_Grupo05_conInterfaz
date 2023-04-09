@@ -92,6 +92,7 @@ public class MainFrame extends JFrame{
                 }
             }
         });
+
         //BOTON DE CUANTOS
         botCuantos.addActionListener(new ActionListener() {
             @Override
@@ -223,8 +224,6 @@ public class MainFrame extends JFrame{
         });
 
     }
-        //BOTÓN DE CONTAR PAISES
-
 
     public static void main(String[] args) {
         MainFrame pag1 = new MainFrame();

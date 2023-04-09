@@ -251,7 +251,7 @@
       </component>
       <component id="7b5ea" class="javax.swing.JTextArea" binding="textEstado">
         <constraints>
-          <grid row="8" column="6" row-span="7" col-span="8" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+          <grid row="8" column="6" row-span="7" col-span="9" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="50"/>
           </grid>
         </constraints>
