@@ -62,31 +62,14 @@ public class MainFrame extends JFrame{
         botones.add(botPrioridad3);
 
         //---BOTON MOSTRAR DATOS---
-        //Ejemplo para probar
-        Hub h1 = new Hub();
-        Contenedor c1 = new Contenedor(100, 1500, "España", true, 3, "Nada", "Correos Express", "Alireparte");
-        Contenedor c2 = new Contenedor(101, 1501, "España", false, 2, "Nada 2", "Correos Express", "Alireparte");
-        h1.apilar(c1);
-        h1.apilar(c2);
         botMostrarDatos.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Contenedor resultado;
-                Contenedor correcto = null;
-                for (int i = 0; i < 10; i++) {
-                    for (int j = 0; j < 12; j++) {
-                        if (h1.getM(i, j) != null) {
-                            resultado = h1.getM(i, j);
-                            if (resultado.getId() == Integer.parseInt(textMostrarDatos.getText())) {
-                                correcto = h1.getM(i, j);
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (correcto != null) {
+                Contenedor C = puerto.mostrarDatos_puerto(Integer.parseInt(textMostrarDatos.getText()));
+
+                if (C != null) {
                     etiError.setText("");
-                    Pag2 verPag2 = new Pag2(correcto);
+                    Pag2 verPag2 = new Pag2(C);
                     verPag2.setVisible(true);
                 } else {
                     etiError.setText("* Error número de identificador equivocado");
@@ -98,34 +81,12 @@ public class MainFrame extends JFrame{
         botCuantos.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Contenedor c;
                 String itemSeleccionado = (String) comboBoxCuantos.getSelectedItem();
-                int contador = 0;
-                String s = " ";
-                for (int i = 0; i < 10; i++) {
-                    for (int j = 0; j < 12; j++) {
-                        if (h1.getM(i, j) != null) {
-                            c = h1.getM(i, j);
-                            if(c.getPais()==itemSeleccionado){
-                                contador = contador + 1;
-                            }
-                        }
-                    }
-                }
-                if (contador!=0) {
-                    s = s + contador;
-                    textCuantos.setText(s);
-                } else {
-                    s = s + 0;
-                    textCuantos.setText(s);
-                }
+                textCuantos.setText(String.valueOf(puerto.totalPaisPuerto(itemSeleccionado)));
             }
         });
 
         //--BOTON DESAPILAR--
-        //Ejemplo para probar
-        puerto.setP(0, h1);
-        textEstado.setText(puerto.getP(0).toString());
         botDesapilar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -136,7 +97,7 @@ public class MainFrame extends JFrame{
                     etiError.setText("* No se pudo desapilar");
                 }
                 else{
-                    etiError.setText("Se desapiló correctamente");
+                    etiError.setText(" ");
                     textEstado.setText(puerto.getP(numPuerto).toString());
                 }
             }
@@ -225,22 +186,21 @@ public class MainFrame extends JFrame{
         });
 
 
-        //Con los datos introducidos del contenedor, lo crea y lo apila en la colunma que le toca segun su preferencia
-        //en caso de no poder escribe un error en etiError
+        //---BOTON APILAR---
         botApilar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int prio= 0;
                 boolean T;
-                int id = Integer.parseInt(textPeso.getText());
+                int id = Integer.parseInt(textNumIdentificacion.getText());
                 int peso = Integer.parseInt(textPeso.getText());
                 if (botPrioridad1.isSelected()){
                     prio= 1;
                 }
-                if (botPrioridad2.isSelected()){
+                else if (botPrioridad2.isSelected()){
                     prio= 2;
                 }
-                if (botPrioridad2.isSelected()){
+                else if (botPrioridad3.isSelected()){
                     prio= 3;
                 }
 
@@ -250,13 +210,15 @@ public class MainFrame extends JFrame{
                 else {
                     T=false;
                 }
-                Contenedor C = new Contenedor(id,peso, comboBoxPais.getName(), T, prio, textDescContent.getText(), textEmpRemitente.getText(), textEmpReceptora.getText());
+                Contenedor C = new Contenedor(id,peso, comboBoxPais.getSelectedItem().toString(), T, prio, textDescContent.getText(), textEmpRemitente.getText(), textEmpReceptora.getText());
                 ;
-               Boolean A =  hub1.apilar(C);
-               if (A == false){
-                   etiError.setText("No se ha podido apilar");
-
+               int A =  puerto.apilar(C);
+               if (A == -1){
+                   etiError.setText("* No se ha podido apilar");
+               }else{
+                   etiError.setText(" ");
                }
+                textEstado.setText(puerto.getP(A).toString());
             }
         });
     }
