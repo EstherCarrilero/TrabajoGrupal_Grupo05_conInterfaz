@@ -44,6 +44,10 @@ public class MainFrame extends JFrame{
     private JLabel labPesoMAL;
     private JLabel etiLogo;
     private JLabel etiError;
+    private JRadioButton botHub1;
+    private JRadioButton botHub2;
+    private JRadioButton botHub3;
+    private JLabel etiHub;
 
     public MainFrame() {
         setContentPane(mainPanel);
@@ -60,6 +64,12 @@ public class MainFrame extends JFrame{
         botones.add(botPrioridad1);
         botones.add(botPrioridad2);
         botones.add(botPrioridad3);
+
+        //---BOTONES DE HUB---
+        ButtonGroup botones_hub = new ButtonGroup();
+        botones_hub.add(botHub1);
+        botones_hub.add(botHub2);
+        botones_hub.add(botHub3);
 
         //---BOTON MOSTRAR DATOS---
         botMostrarDatos.addActionListener(new ActionListener() {
