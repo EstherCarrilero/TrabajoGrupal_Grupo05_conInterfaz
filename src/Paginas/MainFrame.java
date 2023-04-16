@@ -71,18 +71,25 @@ public class MainFrame extends JFrame{
         botones_hub.add(botHub2);
         botones_hub.add(botHub3);
 
+
+
         //---BOTON MOSTRAR DATOS---
         botMostrarDatos.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Contenedor C = puerto.mostrarDatos_puerto(Integer.parseInt(textMostrarDatos.getText()));
-
-                if (C != null) {
-                    etiError.setText("");
-                    Pag2 verPag2 = new Pag2(C);
-                    verPag2.setVisible(true);
-                } else {
-                    etiError.setText("* Error número de identificador equivocado");
+                if(Objects.equals(textMostrarDatos.getText(), "")){
+                    etiError.setText("* Error no hay número de identificador");
+                }
+                else{
+                    Contenedor C = puerto.mostrarDatos_puerto(Integer.parseInt(textMostrarDatos.getText()));
+                    if (C != null) {
+                        etiError.setText("");
+                        Pag2 verPag2 = new Pag2(C);
+                        verPag2.setVisible(true);
+                    }
+                    else {
+                        etiError.setText("* Error número de identificador equivocado");
+                    }
                 }
             }
         });
@@ -100,15 +107,31 @@ public class MainFrame extends JFrame{
         botDesapilar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int columna = Integer.parseInt(textDesapilar.getText());
-                int numPuerto = puerto.desapilar(columna);
-
-                if(numPuerto == -1){
-                    etiError.setText("* No se pudo desapilar");
+                if(Objects.equals(textDesapilar.getText(), "")){
+                    etiError.setText("* Error no hay columna");
                 }
                 else{
-                    etiError.setText(" ");
-                    textEstado.setText(puerto.getP(numPuerto).toString());
+                    int numero = 0;
+                    if (botHub1.isSelected()){
+                        numero= 0;
+                    }
+                    else if (botHub2.isSelected()){
+                        numero= 1;
+                    }
+                    else if (botHub3.isSelected()){
+                        numero= 2;
+                    }
+
+                    int columna = Integer.parseInt(textDesapilar.getText());
+                    boolean estado = puerto.desapilar(columna);
+
+                    if(estado == false){
+                        etiError.setText("* No se pudo desapilar");
+                    }
+                    else{
+                        etiError.setText(" ");
+                        textEstado.setText(puerto.getP(numero).toString());
+                    }
                 }
             }
         });
@@ -204,6 +227,18 @@ public class MainFrame extends JFrame{
                 boolean T;
                 int id = Integer.parseInt(textNumIdentificacion.getText());
                 int peso = Integer.parseInt(textPeso.getText());
+
+                int numero = 0;
+                if (botHub1.isSelected()){
+                    numero= 0;
+                }
+                else if (botHub2.isSelected()){
+                    numero= 1;
+                }
+                else if (botHub3.isSelected()){
+                    numero= 2;
+                }
+
                 if (botPrioridad1.isSelected()){
                     prio= 1;
                 }
@@ -222,13 +257,32 @@ public class MainFrame extends JFrame{
                 }
                 Contenedor C = new Contenedor(id,peso, comboBoxPais.getSelectedItem().toString(), T, prio, textDescContent.getText(), textEmpRemitente.getText(), textEmpReceptora.getText());
                 ;
-               int A =  puerto.apilar(C);
-               if (A == -1){
+               boolean A =  puerto.apilar(C);
+               if (A == false){
                    etiError.setText("* No se ha podido apilar");
                }else{
                    etiError.setText(" ");
                }
-                textEstado.setText(puerto.getP(A).toString());
+                textEstado.setText(puerto.getP(numero).toString());
+            }
+        });
+
+        botHub1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textEstado.setText(puerto.getP(0).toString());
+            }
+        });
+        botHub2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textEstado.setText(puerto.getP(1).toString());
+            }
+        });
+        botHub3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textEstado.setText(puerto.getP(2).toString());
             }
         });
     }
