@@ -5,11 +5,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.*;
 import java.util.Objects;
 import PaqC05.*;
 
-public class MainFrame extends JFrame{
-    Hub hub1 = new Hub();
+public class MainFrame extends JFrame implements Serializable{
     private JPanel mainPanel;
     private JTextField textEmpRemitente;
     private JTextField textEmpReceptora;
@@ -48,7 +48,7 @@ public class MainFrame extends JFrame{
     private JRadioButton botHub2;
     private JRadioButton botHub3;
     private JLabel etiHub;
-
+    private Puerto puerto;
     public MainFrame() {
         setContentPane(mainPanel);
         setTitle("Gestión de contadores");
@@ -56,7 +56,20 @@ public class MainFrame extends JFrame{
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
 
-        Puerto puerto = new Puerto();
+        FileInputStream fis;
+        ObjectInputStream entrada;
+        // serializar escribir lo guardado
+        try {
+            fis = new FileInputStream("puerto.dat");
+            entrada = new ObjectInputStream(fis);
+            puerto = (Puerto) entrada.readObject(); //es necesario el casting
+            fis.close(); // no es obligatorio pero es recomendable
+            entrada.close(); // no es obligatorio pero es recomendable
+        } catch (Exception e) {
+            //Si el fichero no existe y aparece un error se crea el Puerto con el constructor por defecto
+            puerto = new Puerto();
+        }
+        //fin de la serilizacion devolviendo los datos guardados----
         textEstado.setText(puerto.getP(0).toString());
 
         //---BOTONES DE PRIORIDAD---
@@ -74,6 +87,8 @@ public class MainFrame extends JFrame{
 
 
         //---BOTON MOSTRAR DATOS---
+
+
         botMostrarDatos.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -86,8 +101,7 @@ public class MainFrame extends JFrame{
                         etiError.setText("");
                         Pag2 verPag2 = new Pag2(C);
                         verPag2.setVisible(true);
-                    }
-                    else {
+                    }else {
                         etiError.setText("* Error número de identificador equivocado");
                     }
                 }
@@ -104,6 +118,7 @@ public class MainFrame extends JFrame{
         });
 
         //--BOTON DESAPILAR--
+
         botDesapilar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -125,12 +140,27 @@ public class MainFrame extends JFrame{
                     int columna = Integer.parseInt(textDesapilar.getText());
                     boolean estado = puerto.desapilar(columna);
 
-                    if(estado == false){
+                    if(!estado){
                         etiError.setText("* No se pudo desapilar");
                     }
                     else{
                         etiError.setText(" ");
                         textEstado.setText(puerto.getP(numero).toString());
+                        // serializacion de puertos --------------------------
+                        FileOutputStream fos = null;
+                        ObjectOutputStream salida = null;
+
+                        try {
+                            fos = new FileOutputStream("puerto.dat");
+                            salida = new ObjectOutputStream(fos);
+                            salida.writeObject(puerto);
+                            fos.close();
+                            salida.close();
+                        } catch (Exception ex) {
+                            // si aparece un error se muestra en pantalla el tipo de error
+                            ex.printStackTrace();
+                        }
+                        // fin de la serializacion ---------------------------
                     }
                 }
             }
@@ -223,47 +253,56 @@ public class MainFrame extends JFrame{
         botApilar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int prio= 0;
+                int prio = 0;
                 boolean T;
-                int id = Integer.parseInt(textNumIdentificacion.getText());
-                int peso = Integer.parseInt(textPeso.getText());
 
                 int numero = 0;
-                if (botHub1.isSelected()){
-                    numero= 0;
-                }
-                else if (botHub2.isSelected()){
-                    numero= 1;
-                }
-                else if (botHub3.isSelected()){
-                    numero= 2;
+                if (botHub1.isSelected()) {
+                    numero = 0;
+                } else if (botHub2.isSelected()) {
+                    numero = 1;
+                } else if (botHub3.isSelected()) {
+                    numero = 2;
                 }
 
-                if (botPrioridad1.isSelected()){
-                    prio= 1;
+                if (botPrioridad1.isSelected()) {
+                    prio = 1;
+                } else if (botPrioridad2.isSelected()) {
+                    prio = 2;
+                } else if (botPrioridad3.isSelected()) {
+                    prio = 3;
                 }
-                else if (botPrioridad2.isSelected()){
-                    prio= 2;
-                }
-                else if (botPrioridad3.isSelected()){
-                    prio= 3;
-                }
+                T = checkBoxAduana.isSelected();
 
-                if (checkBoxAduana.isSelected()){
-                    T = true;
+                if (textNumIdentificacion.getText().length()==0 || textPeso.getText().length() == 0 || prio == 0 || textDescContent.getText().length() == 0 || textEmpRemitente.getText().length()==0 || textEmpReceptora.getText().length() == 0) {
+                    etiError.setText("* No ha introducido información del contenedor");
+                } else {
+                    int id = Integer.parseInt(textNumIdentificacion.getText());
+                    int peso = Integer.parseInt(textPeso.getText());
+                    Contenedor C = new Contenedor(id, peso, comboBoxPais.getSelectedItem().toString(), T, prio, textDescContent.getText(), textEmpRemitente.getText(), textEmpReceptora.getText());
+                    ;
+                    boolean A = puerto.apilar(C);
+                    if (!A) {
+                        etiError.setText("* No se ha podido apilar");
+                    } else {
+                        etiError.setText(" ");
+                    }
+                    textEstado.setText(puerto.getP(numero).toString());
+                    // serializacion de puertos --------------------------
+                    FileOutputStream fos = null;
+                    ObjectOutputStream salida = null;
+                    try {
+                        fos = new FileOutputStream("puerto.dat");
+                        salida = new ObjectOutputStream(fos);
+                        salida.writeObject(puerto);
+                        fos.close();
+                        salida.close();
+                    } catch (Exception ex) {
+                        // si aparece un error se muestra en pantalla el tipo de error
+                        ex.printStackTrace();
+                    }
+                    // fin de la serializacion ---------------------------
                 }
-                else {
-                    T=false;
-                }
-                Contenedor C = new Contenedor(id,peso, comboBoxPais.getSelectedItem().toString(), T, prio, textDescContent.getText(), textEmpRemitente.getText(), textEmpReceptora.getText());
-                ;
-               boolean A =  puerto.apilar(C);
-               if (A == false){
-                   etiError.setText("* No se ha podido apilar");
-               }else{
-                   etiError.setText(" ");
-               }
-                textEstado.setText(puerto.getP(numero).toString());
             }
         });
 
